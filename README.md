@@ -1,29 +1,32 @@
 # Human Rights First Police Use of Force Map
 
-You can find the deployed project at [Human Rights First Police Use of Force](https://main.d17v0exvwwwzgz.amplifyapp.com/).
+You can find the deployed project at [Human Rights First Police use of Force](https://main.d17v0exvwwwzgz.amplifyapp.com/).
 
 ## Contributors
 
 
-
-|   [Student 1](github.com) |   [Student 2](github.com) |  [Student 3](https://github.com/)                                                       |                                                                                                            |
+|                                                      [student 1](https://github.com/)                                                       |                                                       [student 2](https://github.com/)                                                        |                                                      [student 3](https://github.com/)                                                       |                                                                                                               |                                                                                                             |
 | :-----------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------------------------------------------------------------------: |
-| [<img src="https://www.dalesjewelers.com/wp-content/uploads/2018/10/placeholder-silhouette-male.png" width = "200" />](https://github.com/) | [<img src="https://www.dalesjewelers.com/wp-content/uploads/2018/10/placeholder-silhouette-female.png" width = "200" />](https://github.com/) | [<img src="https://www.dalesjewelers.com/wp-content/uploads/2018/10/placeholder-silhouette-male.png" width = "200" />](https://github.com/) | [<img src="https://www.dalesjewelers.com/wp-content/uploads/2018/10/placeholder-silhouette-female.png" width = "200" />](https://github.com/) | [<img src="https://www.dalesjewelers.com/wp-content/uploads/2018/10/placeholder-silhouette-male.png" width = "200" />](https://github.com/) |
-|                                [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/)                                |                            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/honda0306)                             |                          [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Mister-Corn)                           |                          [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/NandoTheessen)                           |                           [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/wvandolah)                            |
-|                [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)                |                 [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)                 |                [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)                |                 [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)                 |                [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/)                |
+| [<img src="https://media-exp1.licdn.com/dms/image/C5603AQHBdRMfl70c0g/profile-displayphoto-shrink_200_200/0?e=1608163200&v=beta&t=x2kjIpS9INPLMSyc_NNT59uie5td6BOL-3dWae1MCGk" width = "200" />](https://github.com/Griffinw15/) | [<img src="https://media-exp1.licdn.com/dms/image/C5603AQHShEFoe32Lnw/profile-displayphoto-shrink_800_800/0?e=1608163200&v=beta&t=w431sI40V39B3yLsBZguHh8FyW8ybAbw-uAcFL1OXZ0" width="200" />](https://github.com/KristineYW/) | [<img src="https://avatars1.githubusercontent.com/u/55222213?s=400&u=81a5f3241df5769fd8fc5dd5d0c416ed3112f018&v=4" width = "200" />](https://github.com/Daniel-Benson-Poe/) |
+|                                [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Griffinw15/)                                |                            [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/KristineYW/)                             |                          [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Daniel-Benson-Poe/)                           ||
+|                [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/griffinwilson15/)                |                 [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/kristine-w-lambdads/)                 |                [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/daniel-benson-dsaopls/)                |                
 
 <br>
 <br>
 
-🚫 4️⃣ Optional examples of using images with links for your tech stack, make sure to change these to fit your project
+![fastapi](https://img.shields.io/badge/fastapi-0.60.1-blue)
+![pandas](https://img.shields.io/badge/pandas-1.1.0-blueviolet)
+![plotly](https://img.shields.io/badge/plotly-4.9.0-brightgreen)
+![uvicorn](https://img.shields.io/badge/uvicorn-0.11.8-ff69b4)
+![praw](https://img.shields.io/badge/praw-7.1.0-red)
+![python-dotenv](https://img.shields.io/badge/python--dotenv-0.14.0-green)
+![beautifulsoup4](https://img.shields.io/badge/beautifulsoup4-4.9.1-orange)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-0.23.2-yellow)
+![spacy](https://img.shields.io/badge/spacy-2.3.2-lightgrey)
+![newspaper3k](https://img.shields.io/badge/newspaper3k-0.2.8-9cf)
+![fastapi-utils](https://img.shields.io/badge/fastapi--utils-0.2.1-informational)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-11.3.20-yellowgreen)
 
-![MIT](https://img.shields.io/packagist/l/doctrine/orm.svg)
-![React](https://img.shields.io/badge/react-v16.7.0--alpha.2-blue.svg)
-![Typescript](https://img.shields.io/npm/types/typescript.svg?style=flat)
-[![Netlify Status](https://api.netlify.com/api/v1/badges/b5c4db1c-b10d-42c3-b157-3746edd9e81d/deploy-status)](netlify link goes in these parenthesis)
-[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
-
-🚫 more info on using badges [here](https://github.com/badges/shields)
 
 ## Project Overview
 
