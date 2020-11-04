@@ -20,8 +20,10 @@ from newspaper import Article
 import spacy
 from collections import Counter
 from datetime import datetime
-from dotenv import load_dotenv
+#from dotenv import load_dotenv
+import en_core_web_sm
 
+nlp = en_core_web_sm.load()
 
 # Sets all text to lowercase to avoid any case differences
 def lowerify(text):
@@ -58,7 +60,8 @@ backlog_path = os.path.join(os.path.dirname(
         __file__), '..', '..', 'backlog.csv')
 
 # spacy nlp model
-nlp = spacy.load('en_core_web_sm')
+
+nlp = en_core_web_sm.load()
 
 force_type_tags = ['tear-gas-canister', 'bean-bag', 'baton', 'tackle', 'lrad',
                    'kick', 'throw', 'choke', 'push', 'wooden-bullet', 'strike'
@@ -260,7 +263,7 @@ def Data_grab():
     df = pd.read_csv(locs_path)
     #add updated reddit data if update is used
     if updateDF is not None:
-        df = df.append(updateDF,ignore_index =True,sort= True)
+        df = df.concat([df,updateDF],sort= True)
         
     # Fix issue where "Unnamed: 0" created when reading in the dataframe
     df = df.drop(columns="Unnamed: 0")
