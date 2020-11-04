@@ -78,7 +78,7 @@ async def update():
     # Grab data from reddit
     data = []
     # Pull from reddit using the format: reddit.subreddit(<subreddit name>).<sort posts by keyword>(limit=<number of posts that you want to pull>)
-    for submission in reddit.subreddit("news").hot(limit=100):
+    for submission in reddit.subreddit("policebrutality").hot(limit=100):
         data.append([submission.id, submission.title, submission.url])  # Append the post's id, title, and url to a list within the data list
     # construct a dataframe with the data
     col_names = ['id', 'title', 'url']

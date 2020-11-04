@@ -1,11 +1,20 @@
 from fastapi import APIRouter, HTTPException
 import pandas as pd
 import numpy as np
+import praw
+from bs4 import BeautifulSoup
+import re
+import pickle
+from newspaper import Article
 # from .update import backlog_path  # Use this when able to get the backlog.csv filled correctly
 from ast import literal_eval
 import os
 import json
 import ast
+import spacy
+from collections import Counter
+from datetime import datetime
+from dotenv import load_dotenv
 
 router = APIRouter()
 
@@ -41,3 +50,16 @@ async def getdata():
     # Parse the jsonified data removing instances of '\"' making it difficult for backend to collect the data
     parsed = json.loads(result.replace('\"', '"'))
     return parsed
+
+@router.get('/getnewdata')
+async def newdata():
+    ''' 
+    Pulling Data from reddit api
+    and converting to JSON format
+    for web backend
+    '''
+    pass
+    
+    
+
+    
