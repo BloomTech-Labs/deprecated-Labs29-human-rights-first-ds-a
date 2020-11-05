@@ -1,59 +1,78 @@
-from fastapi import APIRouter, HTTPException
+# -*- coding: utf-8 -*-
+"""
+Created on Wed Oct 28 17:37:16 2020
+
+@author: Ronin
+"""
 import pandas as pd
 import numpy as np
+from ast import literal_eval
+from pydantic import BaseModel, Field, validator
+import os
+import json
+import ast
 import praw
+import requests
 from bs4 import BeautifulSoup
 import re
 import pickle
 from newspaper import Article
-# from .update import backlog_path  # Use this when able to get the backlog.csv filled correctly
-from ast import literal_eval
-import os
-import json
-import ast
 import spacy
 from collections import Counter
 from datetime import datetime
 from dotenv import load_dotenv
-from sklearn.pipeline import Pipeline
-router = APIRouter()
-
-@router.get('/getdata')
-async def getdata():
-    '''
-    Get jsonified dataset from all_sources_geoed.csv
-    '''
-
-    # Path to dataset used in our endpoint
-    locs_path = os.path.join(os.path.dirname(
-        __file__), '..', '..', 'all_sources_geoed.csv')
-
-    router = APIRouter()
-
-    df = pd.read_csv(locs_path)
-    # Fix issue where "Unnamed: 0" created when reading in the dataframe
-    df = df.drop(columns="Unnamed: 0")
-
-    # Removes the string type output from columns src and tags, leaving them as arrays for easier use by backend
-    for i in range(len(df)):
-        df['src'][i] = ast.literal_eval(df['src'][i])
-        df['tags'][i] = ast.literal_eval(df['tags'][i])
 
 
-    """
-    Convert data to useable json format
-    ### Response
-    dateframe: JSON object
-    """
-    # Initial conversion to json - use records to jsonify by instances (rows)
-    result = df.to_json(orient="records")
-    # Parse the jsonified data removing instances of '\"' making it difficult for backend to collect the data
-    parsed = json.loads(result.replace('\"', '"'))
-    return parsed
+# Sets all text to lowercase to avoid any case differences
+def lowerify(text):
+    # fix up geolocation dataframe a little
+    return text.lower()
 
+# geolocation dataset; useful for creating location and geolocation data
+locs_path = os.path.join(os.path.dirname(
+    __file__), '..', '..', 'cities_states.csv')
+locs_df = pd.read_csv(locs_path)
 
-@router.get('/update')
-async def update():
+# Drop Unnamed: 0 column and 'country' column
+locs_df = locs_df.drop(columns=['Unnamed: 0', 'country'])
+# Apply lowerify function to all city names
+locs_df['city_ascii'] = locs_df['city_ascii'].apply(lowerify)
+# Apply lowerify function to all state names
+locs_df['admin_name'] = locs_df['admin_name'].apply(lowerify)
+
+# Create state/city mapper
+states_map = {}
+# for each state, map their respective cities
+for state in list(locs_df.admin_name.unique()):
+    states_map[state] = locs_df[locs_df['admin_name']
+                                == state]['city_ascii'].to_list()
+
+# police brutality indentifying nlp
+model_path = os.path.join(os.path.dirname(
+    __file__), '..', '..', 'hrfc_rfmodel_v1.pkl')
+model_file = open(model_path, 'rb')
+pipeline = pickle.load(model_file)
+model_file.close()
+# local csv backlog path used to save the newly pulled in data
+backlog_path = os.path.join(os.path.dirname(
+        __file__), '..', '..', 'backlog.csv')
+
+# spacy nlp model
+nlp = spacy.load('en_core_web_sm')
+
+force_type_tags = ['tear-gas-canister', 'bean-bag', 'baton', 'tackle', 'lrad',
+                   'kick', 'throw', 'choke', 'push', 'wooden-bullet', 'strike'
+                   , 'pepper-ball', 'sexual-assault', 'gas', 'live-round', 
+                   'incitement', 'marking-round', 'knee-on-neck', 'projectile'
+                   , 'gun', 'arrest', 'shield', 'stun-grenade', 'tase', 'mace'
+                   , 'foam-bullet', 'knee', 'taser', 'death', 'pepper-spray', 
+                   'threaten', 'grab', 'less-lethal', 'punch', 'rubber-bullet'
+                   , 'shove', 'beat', 'explosive', 'zip-tie', 'shoot', 
+                   'inhumane-treatment', 'tear-gas', 'spray', 'headlock', 
+                   'abuse-of-power']
+
+updateDF = None
+def Update_data():
     '''
     Update backlog database with data from reddit.
     '''
@@ -71,19 +90,11 @@ async def update():
     # Grab data from reddit
     data = []
     # Pull from reddit using the format: reddit.subreddit(<subreddit name>).<sort posts by keyword>(limit=<number of posts that you want to pull>)
-    for submission in reddit.subreddit("policebrutality").hot(limit=150):
+    for submission in reddit.subreddit("news").hot(limit=100):
         data.append([submission.id, submission.title, submission.url])  # Append the post's id, title, and url to a list within the data list
     # construct a dataframe with the data
     col_names = ['id', 'title', 'url']
     df = pd.DataFrame(data, columns=col_names)
-
-    # Initial conversion to json - use records to jsonify by instances (rows)
-    result = df.to_json(orient="records")
-    # Parse the jsonified data removing instances of '\"' making it difficult for backend to collect the data
-    parsed = json.loads(result.replace('\"', '"'))
-    return parsed
-    
-    pipeline = Pipeline()
 
     # pull the text from each article itself using newspaper3k
     content_list = []
@@ -125,6 +136,7 @@ async def update():
     state_list = []
     lat_list = []
     long_list = []
+    tag_list = []
     for tokens in df['tokens']:
         # set up Counter
         c = Counter(tokens)
@@ -193,13 +205,26 @@ async def update():
         else:
             lat_list.append(row['lat'][0])
             long_list.append(row['lng'][0])
-
+        
+        
+        #try to grab tags for the type of force
+        
+        for x in force_type_tags:
+            count = 0
+            if c[x] > 0:
+                tag_list.append(x)
+                count += 1
+            
+        if count == 0:
+            tag_list.append("Missing")
+            
+    
     # loop ends, add cities and states onto dataframe
     df['city'] = city_list
     df['state'] = state_list
     df['lat'] = lat_list
     df['long'] = long_list
-
+    df['tags'] = tag_list
     # drop any columns with null entries for location
     df = df.dropna()
     df = df.reset_index()
@@ -212,19 +237,44 @@ async def update():
     df['desc'] = df['text']
     df = df.drop(columns=['tokens', 'text'])
     df = df[[
-        'id', 'state', 'city',
-        'date', 'title', 'desc',
-        'src', 'lat', 'long'
+        'src','state','city','desc','tags','title','date','id','lat','long'
     ]]
 
     # save the file to a local csv
-    df.to_csv(backlog_path, index=False, )
-    return HTTPException(
-        200,
-        "Backlog Updated at %s with %s entries" % (datetime.now(), df.shape[0])
-    )
-
-    
+    updateDF = df
     
 
+
+def Data_grab():
+    """
+    Formats data saved in csv and checks for df of updated data
+
+    Returns
+    -------
+    Json version of saved database.
+
+    """
+    locs_path = os.path.join(os.path.dirname(
+        __file__), '..', '..', 'all_sources_geoed.csv')
     
+    df = pd.read_csv(locs_path)
+    #add updated reddit data if update is used
+    if updateDF is not None:
+        df = df.append(updateDF,ignore_index =True,sort= True)
+        
+    # Fix issue where "Unnamed: 0" created when reading in the dataframe
+    df = df.drop(columns="Unnamed: 0")
+    
+    # Removes the string type output from columns src and tags, leaving them 
+    # as arrays for easier use by backend
+    
+    for i in range(len(df)):
+        df['src'][i] = ast.literal_eval(df['src'][i])
+        df['tags'][i] = ast.literal_eval(df['tags'][i])
+        
+    # Initial conversion to json - use records to jsonify by instances (rows)
+    result = df.to_json(orient="records")
+    # Parse the jsonified data removing instances of '\"' making it difficult 
+    # for backend to collect the data
+    parsed = json.loads(result.replace('\"', '"'))
+    return parsed
