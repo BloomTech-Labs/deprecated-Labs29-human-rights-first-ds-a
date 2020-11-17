@@ -14,6 +14,8 @@ This directory contains all files directly important to the final product includ
 
 *• all_sources_geoed.csv* —— csv file containing more cleaned up data from the all_sources.csv file. This is the final dataset created by the labs 27 team and sent to web. 
 
+*• all_sources_geoed_forcetyped.csv*  —— csv file containing previous cleaned data with the type of force used added as a list rather than a whole string that looks like a list.
+
 *• Dockerfile* —— File that contains the instructions needed to automatically build images for Docker.
 
 *• hrfc_rfmodel_v1.pkl* —— File containing the pickled predictive model created in the 'Model_RF_V1.ipnb' in the [labs27_notebooks directory](https://github.com/Lambda-School-Labs/Labs27-C-HRF-DS/tree/main/labs27_notebooks) created by labs 27 team.
