@@ -78,147 +78,151 @@ async def update():
     # Grab data from reddit
     data = []
     # Pull from reddit using the format: reddit.subreddit(<subreddit name>).<sort posts by keyword>(limit=<number of posts that you want to pull>)
-    for submission in reddit.subreddit("news").hot(limit=100):
+    for submission in reddit.subreddit("policebrutality").top(limit=None):
         data.append([submission.id, submission.title, submission.url])  # Append the post's id, title, and url to a list within the data list
     # construct a dataframe with the data
     col_names = ['id', 'title', 'url']
     df = pd.DataFrame(data, columns=col_names)
 
-    # pull the text from each article itself using newspaper3k
-    content_list = []
-    date_list = []
-    # go through each URL and use newspaper3k to extract data
-    for id_url in df['url']:
-        # use newspaper3k to extract text
-        article = Article(id_url)
-        article.download()
-        # if the article doesn't download, the error is thrown in parse()
-        try:
-            article.parse()
-        except:
-            # add null values to show no connection
-            content_list.append(None)
-            date_list.append(None)
-            continue
-        content_list.append(article.text)
-        # this will be null if newspaper3k can't find it
-        date_list.append(article.publish_date)
-    df['text'] = content_list
-    df['date'] = date_list
+    print(df)
 
-    # use NLP model to filter posts
-    df['is_police_brutality'] = pipeline.predict(df['title'])
-    df = df[df['is_police_brutality'] == 1]
-    df = df.drop(columns='is_police_brutality')
 
-    # use spaCy to extract location tokens
-    tokens_list = []
-    for text in df['text']:
-        doc = nlp(text.lower())
-        ents = [e.text for e in doc.ents if e.label_ == 'GPE']
-        tokens_list.append(ents)
-    df['tokens'] = tokens_list
 
-    # figure out which city and state the article takes place in
-    city_list = []
-    state_list = []
-    lat_list = []
-    long_list = []
-    for tokens in df['tokens']:
-        # set up Counter
-        c = Counter(tokens)
+    # # pull the text from each article itself using newspaper3k
+    # content_list = []
+    # date_list = []
+    # # go through each URL and use newspaper3k to extract data
+    # for id_url in df['url']:
+    #     # use newspaper3k to extract text
+    #     article = Article(id_url)
+    #     article.download()
+    #     # if the article doesn't download, the error is thrown in parse()
+    #     try:
+    #         article.parse()
+    #     except:
+    #         # add null values to show no connection
+    #         content_list.append(None)
+    #         date_list.append(None)
+    #         continue
+    #     content_list.append(article.text)
+    #     # this will be null if newspaper3k can't find it
+    #     date_list.append(article.publish_date)
+    # df['text'] = content_list
+    # df['date'] = date_list
 
-        # count which states come back the most, if any
-        state_counts = {}
-        for state in states_map:
-            if c[state] > 0:
-                state_counts[state] = c[state]
+    # # use NLP model to filter posts
+    # df['is_police_brutality'] = pipeline.predict(df['title'])
+    # df = df[df['is_police_brutality'] == 1]
+    # df = df.drop(columns='is_police_brutality')
 
-        # get state(s) that came back the most as dict with lists
-        max_count = 0
-        max_state = None
+    # # use spaCy to extract location tokens
+    # tokens_list = []
+    # for text in df['text']:
+    #     doc = nlp(text.lower())
+    #     ents = [e.text for e in doc.ents if e.label_ == 'GPE']
+    #     tokens_list.append(ents)
+    # df['tokens'] = tokens_list
 
-        for state in state_counts:
-            if state_counts[state] > max_count:
-                max_count = state_counts[state]
-                max_state = {state: {}}
-            elif state_counts[state] == max_count:
-                max_state[state] = {}
+    # # figure out which city and state the article takes place in
+    # city_list = []
+    # state_list = []
+    # lat_list = []
+    # long_list = []
+    # for tokens in df['tokens']:
+    #     # set up Counter
+    #     c = Counter(tokens)
 
-        # if no state is found
-        if max_state is None:
-            city_list.append(None)
-            state_list.append(None)
-            lat_list.append(None)
-            long_list.append(None)
-            continue
+    #     # count which states come back the most, if any
+    #     state_counts = {}
+    #     for state in states_map:
+    #         if c[state] > 0:
+    #             state_counts[state] = c[state]
 
-        max_city = None
-        # get any cities in tokens based on states
-        for state in max_state:  # ideally this should only run once
-            city_counts = {}
-            for city in states_map[state]:
-                if c[city] > 0:
-                    city_counts[city] = c[city]
-            max_state[state] = city_counts
+    #     # get state(s) that came back the most as dict with lists
+    #     max_count = 0
+    #     max_state = None
 
-            # get the city/state combo that came back the most
-            max_count = 0
-            for city in city_counts:
-                if city_counts[city] > max_count:
-                    max_count = city_counts[city]
-                    max_city = (city, state)
+    #     for state in state_counts:
+    #         if state_counts[state] > max_count:
+    #             max_count = state_counts[state]
+    #             max_state = {state: {}}
+    #         elif state_counts[state] == max_count:
+    #             max_state[state] = {}
 
-        # if no city is found
-        if max_city is None:
-            city_list.append(None)
-            state_list.append(None)
-            lat_list.append(None)
-            long_list.append(None)
-            continue
+    #     # if no state is found
+    #     if max_state is None:
+    #         city_list.append(None)
+    #         state_list.append(None)
+    #         lat_list.append(None)
+    #         long_list.append(None)
+    #         continue
 
-        # the city and state should be known now
+    #     max_city = None
+    #     # get any cities in tokens based on states
+    #     for state in max_state:  # ideally this should only run once
+    #         city_counts = {}
+    #         for city in states_map[state]:
+    #             if c[city] > 0:
+    #                 city_counts[city] = c[city]
+    #         max_state[state] = city_counts
 
-        city_list.append(max_city[0].title())
-        state_list.append(max_city[1].title())
-        # now get the geolocation data
-        row = locs_df[(
-            (locs_df['city_ascii'] == max_city[0]) &
-            (locs_df['admin_name'] == max_city[1])
-        )]
-        row = row.reset_index()
-        if row.empty:
-            pass
-        else:
-            lat_list.append(row['lat'][0])
-            long_list.append(row['lng'][0])
+    #         # get the city/state combo that came back the most
+    #         max_count = 0
+    #         for city in city_counts:
+    #             if city_counts[city] > max_count:
+    #                 max_count = city_counts[city]
+    #                 max_city = (city, state)
 
-    # loop ends, add cities and states onto dataframe
-    df['city'] = city_list
-    df['state'] = state_list
-    df['lat'] = lat_list
-    df['long'] = long_list
+    #     # if no city is found
+    #     if max_city is None:
+    #         city_list.append(None)
+    #         state_list.append(None)
+    #         lat_list.append(None)
+    #         long_list.append(None)
+    #         continue
 
-    # drop any columns with null entries for location
-    df = df.dropna()
-    df = df.reset_index()
-    df = df.drop(columns='index')
+    #     # the city and state should be known now
 
-    # cleanup to match 846 api
-    def listify(text):
-        return [text]
-    df['src'] = df['url'].apply(listify)
-    df['desc'] = df['text']
-    df = df.drop(columns=['tokens', 'text'])
-    df = df[[
-        'id', 'state', 'city',
-        'date', 'title', 'desc',
-        'src', 'lat', 'long'
-    ]]
+    #     city_list.append(max_city[0].title())
+    #     state_list.append(max_city[1].title())
+    #     # now get the geolocation data
+    #     row = locs_df[(
+    #         (locs_df['city_ascii'] == max_city[0]) &
+    #         (locs_df['admin_name'] == max_city[1])
+    #     )]
+    #     row = row.reset_index()
+    #     if row.empty:
+    #         pass
+    #     else:
+    #         lat_list.append(row['lat'][0])
+    #         long_list.append(row['lng'][0])
 
-    # save the file to a local csv
-    df.to_csv(backlog_path, index=False, )
-    return HTTPException(
-        200,
-        "Backlog Updated at %s with %s entries" % (datetime.now(), df.shape[0])
-    )
+    # # loop ends, add cities and states onto dataframe
+    # df['city'] = city_list
+    # df['state'] = state_list
+    # df['lat'] = lat_list
+    # df['long'] = long_list
+
+    # # drop any columns with null entries for location
+    # df = df.dropna()
+    # df = df.reset_index()
+    # df = df.drop(columns='index')
+
+    # # cleanup to match 846 api
+    # def listify(text):
+    #     return [text]
+    # df['src'] = df['url'].apply(listify)
+    # df['desc'] = df['text']
+    # df = df.drop(columns=['tokens', 'text'])
+    # df = df[[
+    #     'id', 'state', 'city',
+    #     'date', 'title', 'desc',
+    #     'src', 'lat', 'long'
+    # ]]
+
+    # # save the file to a local csv
+    # df.to_csv(backlog_path, index=False)
+    # return HTTPException(
+    #     200,
+    #     "Backlog Updated at %s with %s entries" % (datetime.now(), df.shape[0])
+    # )
